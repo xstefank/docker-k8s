@@ -1,0 +1,54 @@
+version: "3.8"
+
+services:
+
+  postgres:
+    image: postgres:16.0
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_ADMIN_PASSWORD=admin
+      - POSTGRES_USER=quarkus
+      - POSTGRES_PASSWORD=quarkus 
+      - POSTGRES_DATABASE=quarkus
+    volumes:
+      - ${HOME}/postgres-data/:/var/lib/postgresql/data:Z
+
+  mongo:
+    image: mongo:4.4
+    container_name: mongo
+    ports:
+      - 27017:27017
+
+  prometheus:
+    image: prom/prometheus:v2.30.3
+    container_name: prometheus
+    command: "--config.file=/etc/prometheus/prometheus.yml"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:Z
+    network_mode: host
+
+  grafana:
+    image: grafana/grafana:8.2.1
+    container_name: grafana
+    network_mode: host
+
+  jaeger-all-in-one:
+    image: docker.io/jaegertracing/all-in-one:1
+    ports:
+      - "16686:16686" # Jaeger UI
+      - "4317:4317"   # OTLP receiver
+
+  echo:
+    image: xstefank/echo
+    container_name: echo
+
+  where-am-i:
+    image: xstefank/where-am-i
+    build:
+      context: ./where-am-i
+      dockerfile: src/main/docker/Dockerfile.jvm
+    ports:
+      - "8080:8080"
+
