@@ -13,7 +13,6 @@ public class GreetingResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public String hello() {
-        System.out.println("Going to send the request now");
         try (Client client = ClientBuilder.newClient()) {
             return client.target("http://ip-api.com/json")
                 .request()
